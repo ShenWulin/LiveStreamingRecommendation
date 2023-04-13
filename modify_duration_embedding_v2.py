@@ -128,13 +128,13 @@ class LiveRec_dur_emb_v2(nn.Module):
         seqs_1 = seqs+self.pos_emb(torch.LongTensor(positions).to(self.args.device)) #position embedding
         seqs_1 = self.emb_dropout(seqs_1)
         
-        
+        ## modification
         seqs_2 = seqs+self.dur_emb(dur_seqs) # duration embedding
         seqs_2 = self.emb_dropout(seqs_1)
 
         timeline_mask = (log_seqs == 0).to(self.args.device) # where is no item
         feats_1 = self.att(seqs_1, timeline_mask)
-        feats_2 = self.att(seqs_2, timeline_mask)
+        feats_2 = self.att(seqs_2, timeline_mask) # Generate the parallel duration module
 
         return feats_1,feats_2
 
