@@ -137,7 +137,8 @@ class LiveRec_dur_lstm_v1(nn.Module):
         timeline_mask = (log_seqs == 0).to(self.args.device) # where is no item
         feats_1 = self.att(seqs_1, timeline_mask)
         
-        #duration information
+        ## modification
+        #add duration and time information based on LSTM
         seqs_2 = self.item_embedding(log_seqs) 
         seqs_2 *= self.item_embedding.embedding_dim ** 0.5 # ???
         seqs_2 += self.dur_emb(dur_seqs) # duration embedding
@@ -162,7 +163,7 @@ class LiveRec_dur_lstm_v1(nn.Module):
             i_embs = ctx 
         else:  
             self.item_embedding(items) 
-
+        ## modification
         return (feats_1 * i_embs + feats_2 * i_embs).sum(dim=-1) #dot product to get final score
 #         return (feats_1 * i_embs ).sum(dim=-1)
 
@@ -172,9 +173,8 @@ class LiveRec_dur_lstm_v1(nn.Module):
         pos   = data[:,:,5] # targets
         xtsy  = data[:,:,6] # targets ts
         dur   = data[:,:,7] # duration
-        
-        
-        
+       
+        ## modification
         feats_1,feats_2 = self(inputs,dur,time)
 #         feats_1 = self(inputs,dur,time)
        
@@ -198,10 +198,10 @@ class LiveRec_dur_lstm_v1(nn.Module):
             if self.args.fr_ctx:         
                 ctx_expand = torch.zeros(self.args.av_tens.shape[1],self.args.K,device=self.args.device)
                 ctx_expand[batch_inds[b,-1,:],:] = ctx[b,-1,:,:]
-                scores = (feats_1[b,-1,:] * ctx_expand + feats_2[b,-1,:] * ctx_expand).sum(-1) 
+                scores = (feats_1[b,-1,:] * ctx_expand + feats_2[b,-1,:] * ctx_expand).sum(-1) ## modification
                 scores = scores[:len(av)]
             else:
-                scores = (feats_1[b,-1,:] * av_embs + feats_2[b,-1,:] * av_embs).sum(-1) 
+                scores = (feats_1[b,-1,:] * av_embs + feats_2[b,-1,:] * av_embs).sum(-1) ## modification
 
             iseq = pos[b,-1] == av
             idx  = torch.where(iseq)[0]
