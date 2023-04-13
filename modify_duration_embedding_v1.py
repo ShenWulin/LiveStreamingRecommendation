@@ -126,7 +126,9 @@ class LiveRec_dur_emb_v1(nn.Module):
         
         positions = np.tile(np.array(range(log_seqs.shape[1])), [log_seqs.shape[0], 1])
         seqs += self.pos_emb(torch.LongTensor(positions).to(self.args.device)) #position embedding
-        seqs += self.dur_emb(dur_seqs) # duration embedding
+        
+        ## modification
+        seqs += self.dur_emb(dur_seqs) # add duration embedding
         
         seqs = self.emb_dropout(seqs)
 
